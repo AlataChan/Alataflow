@@ -30,6 +30,7 @@ const RULES = [
 ];
 
 export function scanForSensitiveContent(text) {
+  text = String(text ?? '');
   if (text.trimStart().startsWith('[SAFE]')) {
     return { hit: false };
   }

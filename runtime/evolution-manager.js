@@ -20,7 +20,7 @@ export function extractCapsule(projectRoot, { summary, gene_id, patch_diff, vali
     created_at: now,
     updated_at: now,
     last_used_at: now,
-    patch_path: join(capsuleDir, 'patch.diff'),
+    patch_path: '.alataflow/evolution/capsules/' + id + '/patch.diff',
   };
 
   writeFileSync(join(capsuleDir, 'capsule.json'), JSON.stringify(capsule, null, 2), 'utf8');

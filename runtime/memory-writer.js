@@ -1,10 +1,10 @@
 import { appendFileSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { createHash } from 'crypto';
-import { scanForSensitiveContent } from './scrubber-rules.js';
 
 function scrubText(text) {
   if (!text) return text;
+  text = String(text);
   return text
     .replace(/(sk-[a-zA-Z0-9]{20,})/g, '[REDACTED]')
     .replace(/(Bearer [a-zA-Z0-9+/=]{20,})/g, 'Bearer [REDACTED]')

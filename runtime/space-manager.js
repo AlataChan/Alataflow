@@ -24,7 +24,12 @@ export function generateSpaceMeta(taskDescription, type = 'feature') {
 export function readSpaces(projectRoot) {
   const file = join(projectRoot, '.alataflow', 'spaces.json');
   if (!existsSync(file)) return [];
-  try { return JSON.parse(readFileSync(file, 'utf8')); } catch { return []; }
+  try {
+    const parsed = JSON.parse(readFileSync(file, 'utf8'));
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
 export function writeSpaces(projectRoot, spaces) {
@@ -43,4 +48,14 @@ export function getCurrentSpace(projectRoot) {
   const file = join(projectRoot, '.alataflow', 'current_space');
   if (!existsSync(file)) return null;
   return readFileSync(file, 'utf8').trim() || null;
+}
+
+export function getStaleSpaces(projectRoot) {
+  const spaces = readSpaces(projectRoot);
+  const now = Date.now();
+  return spaces.filter(s => {
+    if (s?.status === 'completed') return false;
+    const last = new Date(s?.last_active).getTime();
+    return (now - last) > 24 * 60 * 60 * 1000;
+  });
 }

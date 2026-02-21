@@ -4,7 +4,8 @@ import { readFileSync, appendFileSync, existsSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { initAlataflow } from '../runtime/init.js';
 import { loadMemoriesForProject } from '../runtime/memory-loader.js';
-import { applyMonthlyDecay } from '../runtime/capsule-decay.js';
+import { decayCapsulesInMemoryFile } from '../runtime/capsule-decay.js';
+import { getStaleSpaces } from '../runtime/space-manager.js';
 
 async function main() {
   let input;
@@ -46,31 +47,13 @@ async function main() {
     }
 
     // Step 4: check stale spaces
-    const spacesFile = join(cwd, '.alataflow', 'spaces.json');
-    if (existsSync(spacesFile)) {
-      const spaces = JSON.parse(readFileSync(spacesFile, 'utf8'));
-      const now = Date.now();
-      const stale = spaces.filter(s => {
-        if (s.status === 'completed') return false;
-        const last = new Date(s.last_active).getTime();
-        return (now - last) > 24 * 60 * 60 * 1000;
-      });
-      if (stale.length > 0) {
-        messages.push('⚠️ ' + stale.length + ' 个 Task Space 已闲置超过 24h：' + stale.map(s => '[' + s.slug + ']').join(', ') + '。运行 /alata:space clean 清理。');
-      }
+    const stale = getStaleSpaces(cwd);
+    if (stale.length > 0) {
+      messages.push('⚠️ ' + stale.length + ' 个 Task Space 已闲置超过 24h：' + stale.map(s => '[' + s.slug + ']').join(', ') + '。运行 /alata:space clean 清理。');
     }
 
     // Step 5: capsule decay (lazy)
-    const memFile = join(cwd, '.alataflow', 'memory.jsonl');
-    if (existsSync(memFile)) {
-      const lines = readFileSync(memFile, 'utf8').split('\n').filter(Boolean);
-      const entries = lines.map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
-      const decayed = applyMonthlyDecay(entries);
-      const changed = decayed.some((e, i) => e.confidence !== entries[i]?.confidence);
-      if (changed) {
-        writeFileSync(memFile, decayed.map(e => JSON.stringify(e)).join('\n') + '\n', 'utf8');
-      }
-    }
+    decayCapsulesInMemoryFile(cwd);
 
     const additionalContext = messages.join('\n');
     if (additionalContext) {

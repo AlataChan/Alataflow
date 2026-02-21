@@ -11,7 +11,7 @@ async function main() {
     process.exit(0); // crash → allow
   }
 
-  const prompt = input.prompt ?? '';
+  const prompt = String(input.prompt ?? '');
   const cwd = input.cwd ?? process.cwd();
 
   try {

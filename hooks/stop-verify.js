@@ -3,15 +3,15 @@ import { join } from 'path';
 
 async function main() {
   let input;
+  let cwd = process.cwd();
   try {
     const raw = readFileSync(process.stdin.fd, 'utf8');
     input = JSON.parse(raw);
+    cwd = input.cwd ?? process.cwd();
   } catch { process.exit(0); }
 
   // CRITICAL: prevent infinite loop
   if (input.stop_hook_active) { process.exit(0); }
-
-  const cwd = input.cwd ?? process.cwd();
 
   try {
     // Check active space
@@ -48,8 +48,14 @@ async function main() {
     if (messages.length > 0) {
       process.stdout.write(JSON.stringify({ additionalContext: messages.join('\n') }));
     }
-  } catch {
-    // never block stop
+  } catch (err) {
+    try {
+      const { appendFileSync } = await import('fs');
+      appendFileSync(
+        join(cwd, '.alataflow', 'error.log'),
+        new Date().toISOString() + ' [stop-verify] ' + (err?.message ?? String(err)) + '\n'
+      );
+    } catch {}
   }
 
   process.exit(0);
