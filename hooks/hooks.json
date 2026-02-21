@@ -2,31 +2,31 @@
   "hooks": {
     "SessionStart": [
       {
-        "matcher": ["startup", "resume", "clear", "compact"],
+        "matcher": "startup|resume|clear|compact",
         "hooks": [
-          { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.js" }
+          { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.js", "async": false }
         ]
       }
     ],
     "UserPromptSubmit": [
       {
         "hooks": [
-          { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scrubber.js" }
+          { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/scrubber.js", "async": false }
         ]
       }
     ],
     "PostToolUse": [
       {
-        "matcher": ["Write", "Edit", "Bash"],
+        "matcher": "Write|Edit|Bash",
         "hooks": [
-          { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/progress-save.js" }
+          { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/progress-save.js", "async": false }
         ]
       }
     ],
     "Stop": [
       {
         "hooks": [
-          { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/stop-verify.js" }
+          { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/stop-verify.js", "async": false }
         ]
       }
     ]
