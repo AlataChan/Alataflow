@@ -1,0 +1,9 @@
+{
+  "name": "alataflow",
+  "version": "0.1.0",
+  "description": "Structured AI workflow plugin — planning, memory, task isolation, genetic reuse.",
+  "author": "AlataFlow",
+  "claude_code": { "min_version": "1.0.0" },
+  "hooks": "hooks/hooks.json",
+  "skills": "skills/"
+}
