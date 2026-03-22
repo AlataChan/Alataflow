@@ -12,7 +12,7 @@
     "runtime/",
     "skills/",
     "CLAUDE.md",
-    ".claude/",
+    ".claude/CLAUDE.md",
     ".codex/",
     "README.md",
     "INSTALL.md"
@@ -26,7 +26,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/alataflow"
+    "url": "https://github.com/AlataChan/Alataflow"
   },
   "engines": {
     "node": ">=18"

@@ -3,6 +3,20 @@
 AlataFlow 是一套面向 **Claude Code + Codex** 的结构化 AI 工作流。
 它把共享状态收敛到 `.alataflow/`，把任务过程收敛到 `.plans/<slug>/`，让规划、执行、验证、审查和经验复用都有稳定落点。
 
+## 安装
+
+```bash
+npm i -g alataflow
+alataflow setup
+# 重启 Claude Code
+```
+
+`alataflow setup` 会自动将插件路径写入 `~/.claude/settings.json`。也可以用 `alataflow setup --project` 只配置当前项目。
+
+安装后运行 `alataflow verify` 确认一切正常。
+
+详细安装说明见 [INSTALL.md](./INSTALL.md)。
+
 ## 平台支持
 
 | 平台 | 支持级别 | 使用方式 |
@@ -12,7 +26,6 @@ AlataFlow 是一套面向 **Claude Code + Codex** 的结构化 AI 工作流。
 
 ## 从哪里开始
 
-- 想先安装：看 [INSTALL.md](./INSTALL.md)
 - 想在 Codex 里使用：看 [.codex/INSTALL.md](./.codex/INSTALL.md) 和 [.codex/AGENTS.md](./.codex/AGENTS.md)
 - 想了解项目内部规则：看 [CLAUDE.md](./CLAUDE.md) 和 [.claude/CLAUDE.md](./.claude/CLAUDE.md)
 - 想看设计方案、升级路线和评审记录：看 [doc/README.md](./doc/README.md)
@@ -21,8 +34,8 @@ AlataFlow 是一套面向 **Claude Code + Codex** 的结构化 AI 工作流。
 
 ### Claude Code
 
-1. 按 [INSTALL.md](./INSTALL.md) 完成插件安装
-2. 打开目标项目，等待 SessionStart 初始化 `.alataflow/`
+1. `npm i -g alataflow && alataflow setup`
+2. 重启 Claude Code，打开目标项目，等待 SessionStart 初始化 `.alataflow/`
 3. 运行 `/alata:onboard` 或 `/alata:plan "your task"`
 4. 按流程完成：`/alata:verify` → `/alata:review` → `/alata:finish`
 

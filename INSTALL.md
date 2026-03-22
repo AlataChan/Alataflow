@@ -7,26 +7,35 @@
 
 - Node.js >= 18
 - Git
-- Claude Code 用户需要 Claude Code >= 1.0.0
-- 零外部依赖，不需要 `npm install`
+- Claude Code >= 1.0.0
+- 零外部依赖
 
 ## Claude Code
 
-### 项目级安装（推荐）
+### npm 安装（推荐）
 
-在项目的 `.claude/settings.json` 中添加：
-
-```json
-{
-  "plugins": [
-    "/path/to/Alataflow"
-  ]
-}
+```bash
+npm i -g alataflow
+alataflow setup
 ```
 
-### 全局安装
+`alataflow setup` 会自动将插件路径写入 `~/.claude/settings.json`。
 
-在 `~/.claude/settings.json` 中添加：
+如果只想配置当前项目：
+
+```bash
+alataflow setup --project
+```
+
+验证安装：
+
+```bash
+alataflow verify
+```
+
+### 从源码安装
+
+如果你 clone 了仓库，也可以手动配置。在 `~/.claude/settings.json`（全局）或项目的 `.claude/settings.json` 中添加：
 
 ```json
 {
