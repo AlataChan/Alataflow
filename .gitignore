@@ -2,6 +2,9 @@ node_modules/
 .alataflow/session_state.json
 .alataflow/error.log
 .alataflow/scrubber.log
+.alataflow/experiment_active.*
+.alataflow-root
+.plans/*/compact_context.json
 .DS_Store
 .ccb/
 .claude/

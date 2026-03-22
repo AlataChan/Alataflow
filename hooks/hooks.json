@@ -23,6 +23,13 @@
         ]
       }
     ],
+    "PreCompact": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/pre-compact.js", "async": false }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [

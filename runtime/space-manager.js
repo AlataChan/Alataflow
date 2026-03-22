@@ -1,7 +1,16 @@
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join } from 'path';
+import { join, resolve } from 'path';
 
-export function generateSpaceMeta(taskDescription, type = 'feature') {
+export function resolveStateRoot(cwd) {
+  const rootFile = join(cwd, '.alataflow-root');
+  if (existsSync(rootFile)) {
+    const root = readFileSync(rootFile, 'utf8').trim();
+    if (root && existsSync(join(root, '.alataflow'))) return root;
+  }
+  return cwd;
+}
+
+export function generateSpaceMeta(taskDescription, type = 'feature', { mainCheckoutPath, worktreePath } = {}) {
   const slug = taskDescription
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, '')
@@ -18,7 +27,26 @@ export function generateSpaceMeta(taskDescription, type = 'feature') {
     created_at: new Date().toISOString(),
     last_active: new Date().toISOString(),
     status: 'active',
+    state_root_path: mainCheckoutPath ?? null,
+    main_checkout_path: mainCheckoutPath ?? null,
+    worktree_path: worktreePath ?? null,
   };
+}
+
+export function backfillSpacePaths(projectRoot, spaces) {
+  let changed = false;
+  for (const space of spaces) {
+    if (!space.main_checkout_path) {
+      space.main_checkout_path = projectRoot;
+      space.state_root_path = projectRoot;
+      changed = true;
+    }
+    if (!space.state_root_path) {
+      space.state_root_path = space.main_checkout_path ?? projectRoot;
+      changed = true;
+    }
+  }
+  return changed;
 }
 
 export function readSpaces(projectRoot) {

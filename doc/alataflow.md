@@ -1,4 +1,19 @@
-AlataFlow — 收敛方案 v1.2（选择 1：以 Superpowers 为骨架 + GEP-lite 遗传层）
+# AlataFlow — 收敛方案 v1.2（历史设计）
+
+> 状态：**Historical reference**
+>
+> 本文档是 AlataFlow 的早期收敛设计记录，用于保留方案演进脉络。
+> 它不再代表当前的主设计真相。
+>
+> 当前应以 [2026-03-22-v1.1-upgrade-plan.md](./2026-03-22-v1.1-upgrade-plan.md) 为准。
+> 该文档收敛了最新的工作流定义、Experiment 设计、状态根约束、Hook 行为与 Claude Code / Codex 并列支持策略。
+>
+> 推荐阅读顺序：
+> 1. [../README.md](../README.md)
+> 2. [../INSTALL.md](../INSTALL.md)
+> 3. [README.md](./README.md)
+> 4. [2026-03-22-v1.1-upgrade-plan.md](./2026-03-22-v1.1-upgrade-plan.md)
+
 一、决策确认清单（收敛后）
 决策点	最终决定
 工作流真源（Single Spine）	✅ 只保留一套：命令/Hook/文件约定（其余只借鉴，不并排启用）

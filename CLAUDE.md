@@ -1,5 +1,9 @@
 # AlataFlow — Project Rules
 
+> Internal maintainer and agent contract only.
+> User-facing installation and usage belong in `README.md` and `INSTALL.md`.
+> Design notes, plans and review records belong in `doc/README.md`.
+
 ## Command Namespace
 All commands use /alata:* prefix.
 

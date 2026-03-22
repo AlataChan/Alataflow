@@ -1,5 +1,8 @@
 # Claude Code 核心规范
 
+> 这是 Claude Code 团队协作规范，不是面向用户的安装说明。
+> 用户入口看 `README.md` / `INSTALL.md`，设计文档索引看 `doc/README.md`。
+
 ## 1. 团队角色
 
 ### Claude — 架构师 / 项目经理

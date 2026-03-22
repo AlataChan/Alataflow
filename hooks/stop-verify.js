@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
+import { resolveStateRoot } from '../runtime/space-manager.js';
 
 async function main() {
   let input;
@@ -13,15 +14,21 @@ async function main() {
   // CRITICAL: prevent infinite loop
   if (input.stop_hook_active) { process.exit(0); }
 
+  const stateRoot = resolveStateRoot(cwd);
+
   try {
     // Check active space
-    const currentSpaceFile = join(cwd, '.alataflow', 'current_space');
+    const currentSpaceFile = join(stateRoot, '.alataflow', 'current_space');
     if (!existsSync(currentSpaceFile)) { process.exit(0); }
     const slug = readFileSync(currentSpaceFile, 'utf8').trim();
     if (!slug) { process.exit(0); }
 
+    // Silent in experiment mode
+    const experimentFlag = join(stateRoot, '.alataflow', 'experiment_active.' + slug);
+    if (existsSync(experimentFlag)) { process.exit(0); }
+
     // Check write_count
-    const stateFile = join(cwd, '.alataflow', 'session_state.json');
+    const stateFile = join(stateRoot, '.alataflow', 'session_state.json');
     let state = {};
     try { state = JSON.parse(readFileSync(stateFile, 'utf8')); } catch {}
     const writeCount = state.write_count ?? 0;
@@ -33,7 +40,7 @@ async function main() {
     }
 
     // Memory threshold warning (pre-warn at 45)
-    const memFile = join(cwd, '.alataflow', 'memory.jsonl');
+    const memFile = join(stateRoot, '.alataflow', 'memory.jsonl');
     if (existsSync(memFile)) {
       const count = readFileSync(memFile, 'utf8').split('\n').filter(Boolean).length;
       if (count >= 45) {
@@ -52,7 +59,7 @@ async function main() {
     try {
       const { appendFileSync } = await import('fs');
       appendFileSync(
-        join(cwd, '.alataflow', 'error.log'),
+        join(stateRoot, '.alataflow', 'error.log'),
         new Date().toISOString() + ' [stop-verify] ' + (err?.message ?? String(err)) + '\n'
       );
     } catch {}

@@ -1,112 +1,96 @@
 # AlataFlow
 
-Structured AI workflow plugin for Claude Code — planning, memory recall, task isolation, and genetic reuse via Single Spine architecture.
+AlataFlow 是一套面向 **Claude Code + Codex** 的结构化 AI 工作流。
+它把共享状态收敛到 `.alataflow/`，把任务过程收敛到 `.plans/<slug>/`，让规划、执行、验证、审查和经验复用都有稳定落点。
 
-面向 Claude Code 的结构化 AI 工作流插件——以 Single Spine 架构实现：规划、记忆召回、任务隔离与遗传式复用（GEP-lite）。
+## 平台支持
 
-## Features / 功能
+| 平台 | 支持级别 | 使用方式 |
+|------|----------|----------|
+| Claude Code | First-class | `hooks + skills + runtime`，自动化最完整 |
+| Codex | Supported | `skills + runtime` 手动模式，无 Claude hooks |
 
-**EN**
-- 4 thin hooks: session-start, scrubber, progress-save, stop-verify
-- JSONL memory: zero dependencies, cross-platform, git-diffable
-- Task Space: git worktree abstraction
-- GEP-lite: Capsule extract/apply with confidence tracking
+## 从哪里开始
 
-**中文**
-- 4 个薄 Hook：session-start、scrubber、progress-save、stop-verify
-- JSONL 记忆层：零依赖、跨平台、适合 git diff
-- Task Space：基于 git worktree 的任务隔离抽象
-- GEP-lite：Capsule 提取/应用 + 置信度跟踪
+- 想先安装：看 [INSTALL.md](./INSTALL.md)
+- 想在 Codex 里使用：看 [.codex/INSTALL.md](./.codex/INSTALL.md) 和 [.codex/AGENTS.md](./.codex/AGENTS.md)
+- 想了解项目内部规则：看 [CLAUDE.md](./CLAUDE.md) 和 [.claude/CLAUDE.md](./.claude/CLAUDE.md)
+- 想看设计方案、升级路线和评审记录：看 [doc/README.md](./doc/README.md)
 
-## Requirements / 环境要求
+## 3 分钟上手
 
-**EN**
-- Node.js >= 18
-- Claude Code >= 1.0.0
-- Git (required for Task Space workflows)
+### Claude Code
 
-**中文**
-- Node.js >= 18
-- Claude Code >= 1.0.0
-- Git（Task Space 工作流需要）
+1. 按 [INSTALL.md](./INSTALL.md) 完成插件安装
+2. 打开目标项目，等待 SessionStart 初始化 `.alataflow/`
+3. 运行 `/alata:onboard` 或 `/alata:plan "your task"`
+4. 按流程完成：`/alata:verify` → `/alata:review` → `/alata:finish`
 
-## Install (Claude Code) / 安装（Claude Code）
+### Codex
 
-**EN**
-1. Copy this plugin directory into your Claude Code plugins folder.
-2. Restart Claude Code.
-3. On first SessionStart, AlataFlow initializes `.alataflow/` in your project.
+1. 按 [INSTALL.md](./INSTALL.md) 完成 Codex 侧初始化
+2. 运行：
+   ```bash
+   node -e "import('./runtime/init.js').then(m => m.initAlataflow('.'))"
+   ```
+3. 阅读 [.codex/AGENTS.md](./.codex/AGENTS.md)
+4. 采用同一生命周期手动推进任务；hooks 不会自动触发
 
-**中文**
-1. 将本插件目录复制到 Claude Code 的 plugins 目录。
-2. 重启 Claude Code。
-3. 首次 SessionStart 时，AlataFlow 会在项目中初始化 `.alataflow/`。
+## 核心工作流
 
-## Quickstart / 快速开始
+```text
+Plan → Execute → [Experiment] → Verify → Review → Finish
+```
 
-**EN**
-1. Run `/alata:onboard` (optional) to walk through setup.
-2. Run `/alata:plan "add a hello world endpoint"` to start your first Task Space and plan.
+- `Experiment` 是可选环节，适合性能调优、重构、迭代修复
+- Claude Code 会自动接入 hooks
+- Codex 需要手动执行等价步骤
 
-**中文**
-1. 可选：运行 `/alata:onboard` 完成首次引导。
-2. 运行 `/alata:plan "add a hello world endpoint"` 创建第一个 Task Space 并生成计划。
+## 核心概念
 
-## Commands / 命令
+- **Single Spine**：共享状态放在 `.alataflow/`，任务过程放在 `.plans/<slug>/`
+- **Task Space**：以独立任务空间承载单个任务的计划、进度、发现和验证
+- **Memory / Capsule**：把经验和已验证方案沉淀为可检索、可复用资产
 
-| Command | English | 中文 |
-|---------|---------|------|
-| `/alata:plan <description>` | Brainstorming → task space → planning | 头脑风暴 → 创建任务空间 → 生成计划 |
-| `/alata:brainstorm` | Explore intent, propose approaches | 澄清需求并给出方案选项 |
-| `/alata:space create <desc>` | Create an isolated Task Space | 创建隔离的 Task Space |
-| `/alata:space status` | List spaces and status | 列出所有空间与状态 |
-| `/alata:space switch <slug>` | Switch active space | 切换当前空间 |
-| `/alata:space clean` | Clean completed/stale spaces | 清理完成/闲置空间 |
-| `/alata:recall <query>` | Search memory by keyword | 按关键词检索记忆 |
-| `/alata:remember <note>` | Save a memory entry | 写入一条记忆 |
-| `/alata:memory status` | Show memory statistics | 查看记忆统计 |
-| `/alata:memory sync` | Compact/deduplicate memory.jsonl | 压缩/去重 memory.jsonl |
-| `/alata:verify` | Run verification commands from task_plan.md | 执行 task_plan.md 的验证命令 |
-| `/alata:review` | 3-check review (plan/quality/risk) | 三项审查（计划/质量/风险） |
-| `/alata:finish` | Merge/PR/keep/discard Task Space | 合并/PR/保留/丢弃任务空间 |
-| `/alata:evolve extract` | Extract a verified Capsule | 提取已验证的 Capsule |
-| `/alata:evolve apply [id]` | Apply a Capsule patch and track outcome | 应用 Capsule 补丁并记录结果 |
-| `/alata:onboard` | First-time setup guide | 首次使用引导 |
+## 常用命令
 
-For the full reference, see `skills/meta/using-alataflow/skill.md`.
+| 命令 | 用途 |
+|------|------|
+| `/alata:onboard` | 首次使用引导 |
+| `/alata:plan <description>` | 从需求澄清进入 Task Space 和任务计划 |
+| `/alata:verify` | 运行 `task_plan.md` 中定义的验证命令 |
+| `/alata:review` | 做计划符合性、代码质量、风险审查 |
+| `/alata:finish` | 完成收尾：合并、保留或丢弃 Task Space |
+| `/alata:recall <query>` | 检索历史记忆 |
+| `/alata:remember <note>` | 写入一条记忆 |
+| `/alata:evolve extract` | 将通过验证的方案提取为 Capsule |
+| `/alata:experiment ...` | 进行 keep/discard 式迭代实验 |
 
-完整参考见：`skills/meta/using-alataflow/skill.md`。
+完整命令参考见 [skills/meta/using-alataflow/skill.md](./skills/meta/using-alataflow/skill.md)。
 
-## State & Plans / 状态与计划文件
+## 目录结构
 
-**EN**
-- `.alataflow/` is the single source of truth for state/memory.
-- `.plans/<slug>/` stores per-task plan, findings, progress and design notes.
+| 路径 | 作用 |
+|------|------|
+| `.alataflow/` | 共享状态根：记忆、空间注册表、会话状态、错误日志 |
+| `.plans/<slug>/` | 单任务文件：`task_plan.md`、`findings.md`、`progress.md`、`design.md` |
+| `skills/` | 工作流技能定义 |
+| `runtime/` | Node.js 业务逻辑 |
+| `hooks/` | Claude Code hooks |
+| `doc/` | 设计文档、升级方案、历史评审 |
 
-**中文**
-- `.alataflow/` 是状态与记忆的唯一真实来源（Single Spine）。
-- `.plans/<slug>/` 存放每个任务的计划、发现、进度与设计记录。
+## 开发
 
-## Development / 开发
+运行测试：
 
-**EN**
-Run tests (no external dependencies):
 ```bash
 node --test runtime/*.test.js
 ```
 
-**中文**
-运行测试（无外部依赖）：
-```bash
-node --test runtime/*.test.js
-```
+如果你是第一次读这个仓库，建议顺序是：
 
-## Codex Note / Codex 说明
-
-**EN**
-Codex does not support Claude Code hooks. You can still use `skills/` and run `runtime/` scripts manually.
-See `.codex/INSTALL.md`.
-
-**中文**
-Codex 不支持 Claude Code 的自动 Hooks，但仍可手动使用 `skills/` 并直接运行 `runtime/` 脚本。
-详见：`.codex/INSTALL.md`。
+1. [README.md](./README.md)
+2. [INSTALL.md](./INSTALL.md)
+3. Claude Code 用户继续看 [CLAUDE.md](./CLAUDE.md)
+4. Codex 用户继续看 [.codex/INSTALL.md](./.codex/INSTALL.md) 和 [.codex/AGENTS.md](./.codex/AGENTS.md)
+5. 维护者再进入 [doc/README.md](./doc/README.md)
