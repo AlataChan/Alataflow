@@ -3,5 +3,32 @@
   "version": "1.1.0",
   "type": "module",
   "description": "Structured AI workflow plugin — planning, memory, task isolation, experiment loops, genetic reuse.",
-  "private": true
+  "bin": {
+    "alataflow": "./bin/alataflow.js"
+  },
+  "files": [
+    "bin/",
+    "hooks/",
+    "runtime/",
+    "skills/",
+    "CLAUDE.md",
+    ".claude/",
+    ".codex/",
+    "README.md",
+    "INSTALL.md"
+  ],
+  "keywords": [
+    "claude-code",
+    "ai-workflow",
+    "planning",
+    "experiment"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/alataflow"
+  },
+  "engines": {
+    "node": ">=18"
+  }
 }
